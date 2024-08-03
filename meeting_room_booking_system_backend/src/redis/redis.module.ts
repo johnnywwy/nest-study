@@ -2,6 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { RedisService } from './redis.service';
 import { createClient } from 'redis';
 
+// 声明为全局模块
 @Global()
 @Module({
   providers: [

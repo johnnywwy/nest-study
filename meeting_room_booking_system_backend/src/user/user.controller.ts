@@ -22,10 +22,10 @@ export class UserController {
 
   @ApiOperation({ summary: '用户注册' }) // 这里描述接口的功能
   @Post('register')
-  register(@Body() registerUser: RegisterUserDto) {
+  async register(@Body() registerUser: RegisterUserDto) {
     console.log(registerUser);
 
-    return this.userService.register(registerUser);
+    return await this.userService.register(registerUser);
     // return 'success';
   }
 

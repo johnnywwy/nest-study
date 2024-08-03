@@ -9,6 +9,7 @@ import { User } from './user/entities/user.entity';
 import { Role } from './user/entities/role.entity';
 import { Permission } from './user/entities/permission.entity';
 import { RedisModule } from './redis/redis.module';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -24,12 +25,13 @@ import { RedisModule } from './redis/redis.module';
       entities: [User, Role, Permission],
       poolSize: 10,
       connectorPackage: 'mysql2',
-      extra: {
-        authPlugin: 'sha256_password',
-      },
+      // extra: {
+      //   authPlugin: 'sha256_password',
+      // },
     }),
     UserModule,
     RedisModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
