@@ -58,6 +58,13 @@ export class UserController {
     return '发送成功';
   }
 
+  @ApiOperation({ summary: '初始化数据' }) // 这里描述接口的功能
+  @Get('init-data')
+  async initData() {
+    await this.userService.initData();
+    return 'done';
+  }
+
   @ApiOperation({ summary: '用户注册' }) // 这里描述接口的功能
   @Post('register')
   async register(@Body() registerUser: RegisterUserDto) {
