@@ -9,15 +9,20 @@ import {
   Inject,
   Query,
   HttpStatus,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { ApiTags, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 
 import { EmailService } from 'src/email/email.service';
 import { RedisService } from 'src/redis/redis.service';
+import { JwtService } from '@nestjs/jwt';
+import { LoginUserVo } from './vo/login-user.vo';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('用户管理模块')
 @Controller('user')
@@ -29,6 +34,12 @@ export class UserController {
 
   @Inject(RedisService)
   private redisService: RedisService;
+
+  @Inject(JwtService)
+  private jwtService: JwtService;
+
+  @Inject(ConfigService)
+  private configService: ConfigService;
 
   @ApiOperation({ summary: '获取验证码' }) // 这里描述接口的功能
   @ApiQuery({
@@ -75,9 +86,61 @@ export class UserController {
   }
 
   @ApiOperation({ summary: '用户登录' })
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  @Post('login')
+  async userLogin(@Body() loginUser: LoginUserDto) {
+    const vo = await this.userService.login(loginUser, false);
+    vo.accessToken = this.createAccessToken(vo);
+    vo.refreshToken = this.createRefreshToken(vo);
+    return vo;
+  }
+
+  @ApiOperation({ summary: '管理员登录' })
+  @Post('admin/login')
+  async adminLogin(@Body() loginUser: LoginUserDto) {
+    const vo = await this.userService.login(loginUser, true);
+    vo.accessToken = this.createAccessToken(vo);
+    vo.refreshToken = this.createRefreshToken(vo);
+    return vo;
+  }
+
+  @ApiOperation({ summary: '刷新token' })
+  @Get('refresh')
+  async refresh(@Query('refreshToken') refreshToken: string) {
+    try {
+      const data = this.jwtService.verify(refreshToken);
+
+      const user = await this.userService.findUserById(data.userId, false);
+
+      const access_token = this.createAccessToken(user);
+      const refresh_token = this.createRefreshToken(user);
+
+      return {
+        access_token,
+        refresh_token,
+      };
+    } catch (e) {
+      throw new UnauthorizedException('token 已失效，请重新登录');
+    }
+  }
+
+  @ApiOperation({ summary: '管理员刷新token' })
+  @Get('admin/refresh')
+  async adminRefresh(@Query('refreshToken') refreshToken: string) {
+    try {
+      const data = this.jwtService.verify(refreshToken);
+
+      const user = await this.userService.findUserById(data.userId, true);
+
+      const access_token = this.createAccessToken(user);
+      const refresh_token = this.createRefreshToken(user);
+
+      return {
+        access_token,
+        refresh_token,
+      };
+    } catch (e) {
+      throw new UnauthorizedException('token 已失效，请重新登录');
+    }
   }
 
   @ApiOperation({ summary: '获取所有用户' })
@@ -102,5 +165,34 @@ export class UserController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
+  }
+
+  // 生成refresh_token
+  private createRefreshToken(user: any): string {
+    return this.jwtService.sign(
+      {
+        userId: user.id,
+      },
+      {
+        expiresIn:
+          this.configService.get('jwt_refresh_token_expres_time') || '7d',
+      },
+    );
+  }
+
+  // 生成access_token
+  private createAccessToken(user: any): string {
+    return this.jwtService.sign(
+      {
+        userId: user.id,
+        username: user.username,
+        roles: user.roles,
+        permissions: user.permissions,
+      },
+      {
+        expiresIn:
+          this.configService.get('jwt_access_token_expires_time') || '30m',
+      },
+    );
   }
 }
