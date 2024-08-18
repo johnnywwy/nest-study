@@ -1,6 +1,8 @@
-import { Controller, Get, SetMetadata } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiTags } from '@nestjs/swagger';
+import { RequireLogin, RequirePermission, UserInfo } from './custom.decorator';
+import { userInfo } from 'os';
 
 @ApiTags('app 模块')
 @Controller()
@@ -13,9 +15,12 @@ export class AppController {
   }
 
   @Get('aaa')
-  @SetMetadata('require-login', true)
-  @SetMetadata('require-permission', ['ddd'])
-  aaa() {
+  @RequireLogin()
+  @RequirePermission('ddd')
+  aaa(@UserInfo('username') username: string, @UserInfo() userInfo) {
+    console.log('username', username);
+    console.log('userInfo', userInfo);
+
     return 'aaa';
   }
 

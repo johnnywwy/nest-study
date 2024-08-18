@@ -91,7 +91,7 @@ export class UserController {
   async userLogin(@Body() loginUser: LoginUserDto) {
     const vo = await this.userService.login(loginUser, false);
 
-    console.log('用户', vo);
+    // console.log('用户', vo);
 
     vo.accessToken = this.createAccessToken(vo.userInfo);
     vo.refreshToken = this.createRefreshToken(vo.userInfo);
@@ -127,7 +127,7 @@ export class UserController {
   @Post('admin/login')
   async adminLogin(@Body() loginUser: LoginUserDto) {
     const vo = await this.userService.login(loginUser, true);
-    console.log('用户', vo);
+    // console.log('用户', vo);
     vo.accessToken = this.createAccessToken(vo.userInfo);
     vo.refreshToken = this.createRefreshToken(vo.userInfo);
 
