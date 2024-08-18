@@ -14,7 +14,8 @@ export class AppController {
 
   @Get('aaa')
   @SetMetadata('require-login', true)
-  aaaa() {
+  @SetMetadata('require-permission', ['ddd'])
+  aaa() {
     return 'aaa';
   }
 

@@ -22,6 +22,7 @@ import { EmailService } from 'src/email/email.service';
 import { RedisService } from 'src/redis/redis.service';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserVo } from './vo/login-user.vo';
+import { RefreshTokenVo } from './vo/refresh-token.vo';
 import { ConfigService } from '@nestjs/config';
 
 @ApiTags('用户管理模块')
@@ -89,8 +90,36 @@ export class UserController {
   @Post('login')
   async userLogin(@Body() loginUser: LoginUserDto) {
     const vo = await this.userService.login(loginUser, false);
-    vo.accessToken = this.createAccessToken(vo);
-    vo.refreshToken = this.createRefreshToken(vo);
+
+    console.log('用户', vo);
+
+    vo.accessToken = this.createAccessToken(vo.userInfo);
+    vo.refreshToken = this.createRefreshToken(vo.userInfo);
+
+    // vo.accessToken = this.jwtService.sign(
+    //   {
+    //     userId: vo.userInfo.id,
+    //     username: vo.userInfo.username,
+    //     email: vo.userInfo.email,
+    //     roles: vo.userInfo.roles,
+    //     permissions: vo.userInfo.permissions,
+    //   },
+    //   {
+    //     expiresIn:
+    //       this.configService.get('jwt_access_token_expires_time') || '30m',
+    //   },
+    // );
+
+    // vo.refreshToken = this.jwtService.sign(
+    //   {
+    //     userId: vo.userInfo.id,
+    //   },
+    //   {
+    //     expiresIn:
+    //       this.configService.get('jwt_refresh_token_expres_time') || '7d',
+    //   },
+    // );
+
     return vo;
   }
 
@@ -98,8 +127,33 @@ export class UserController {
   @Post('admin/login')
   async adminLogin(@Body() loginUser: LoginUserDto) {
     const vo = await this.userService.login(loginUser, true);
-    vo.accessToken = this.createAccessToken(vo);
-    vo.refreshToken = this.createRefreshToken(vo);
+    console.log('用户', vo);
+    vo.accessToken = this.createAccessToken(vo.userInfo);
+    vo.refreshToken = this.createRefreshToken(vo.userInfo);
+
+    // vo.accessToken = this.jwtService.sign(
+    //   {
+    //     userId: vo.userInfo.id,
+    //     username: vo.userInfo.username,
+    //     email: vo.userInfo.email,
+    //     roles: vo.userInfo.roles,
+    //     permissions: vo.userInfo.permissions,
+    //   },
+    //   {
+    //     expiresIn:
+    //       this.configService.get('jwt_access_token_expires_time') || '30m',
+    //   },
+    // );
+
+    // vo.refreshToken = this.jwtService.sign(
+    //   {
+    //     userId: vo.userInfo.id,
+    //   },
+    //   {
+    //     expiresIn:
+    //       this.configService.get('jwt_refresh_token_expres_time') || '7d',
+    //   },
+    // );
     return vo;
   }
 
@@ -113,11 +167,36 @@ export class UserController {
 
       const access_token = this.createAccessToken(user);
       const refresh_token = this.createRefreshToken(user);
+      // const access_token = this.jwtService.sign(
+      //   {
+      //     userId: user.id,
+      //     username: user.username,
+      //     email: user.email,
+      //     roles: user.roles,
+      //     permissions: user.permissions,
+      //   },
+      //   {
+      //     expiresIn:
+      //       this.configService.get('jwt_access_token_expires_time') || '30m',
+      //   },
+      // );
 
-      return {
-        access_token,
-        refresh_token,
-      };
+      // const refresh_token = this.jwtService.sign(
+      //   {
+      //     userId: user.id,
+      //   },
+      //   {
+      //     expiresIn:
+      //       this.configService.get('jwt_refresh_token_expres_time') || '7d',
+      //   },
+      // );
+
+      const vo = new RefreshTokenVo();
+
+      vo.access_token = access_token;
+      vo.refresh_token = refresh_token;
+
+      return vo;
     } catch (e) {
       throw new UnauthorizedException('token 已失效，请重新登录');
     }
@@ -128,16 +207,38 @@ export class UserController {
   async adminRefresh(@Query('refreshToken') refreshToken: string) {
     try {
       const data = this.jwtService.verify(refreshToken);
-
       const user = await this.userService.findUserById(data.userId, true);
 
-      const access_token = this.createAccessToken(user);
-      const refresh_token = this.createRefreshToken(user);
+      const access_token = this.jwtService.sign(
+        {
+          userId: user.id,
+          username: user.username,
+          email: user.email,
+          roles: user.roles,
+          permissions: user.permissions,
+        },
+        {
+          expiresIn:
+            this.configService.get('jwt_access_token_expires_time') || '30m',
+        },
+      );
 
-      return {
-        access_token,
-        refresh_token,
-      };
+      const refresh_token = this.jwtService.sign(
+        {
+          userId: user.id,
+        },
+        {
+          expiresIn:
+            this.configService.get('jwt_refresh_token_expres_time') || '7d',
+        },
+      );
+
+      const vo = new RefreshTokenVo();
+
+      vo.access_token = access_token;
+      vo.refresh_token = refresh_token;
+
+      return vo;
     } catch (e) {
       throw new UnauthorizedException('token 已失效，请重新登录');
     }
