@@ -22,6 +22,7 @@ import { Permission } from './entities/permission.entity';
 
 import { LoginUserVo } from './vo/login-user.vo';
 import { LoginUserDto } from './dto/login-user.dto';
+import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 
 @Injectable()
 export class UserService {
@@ -206,5 +207,57 @@ export class UserService {
         return arr;
       }, []),
     };
+  }
+
+  /**
+   * 根据用户ID查询用户详情
+   *
+   * @param userId 用户ID
+   * @returns 返回用户详情对象，若未找到则返回undefined
+   */
+  async findUserDetailById(userId: number) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    return user;
+  }
+
+  /**
+   * 更新用户密码
+   *
+   * @param userId 用户ID
+   * @param passwordDto 更新密码的DTO对象
+   * @returns 返回修改密码的结果
+   * @throws 如果验证码不存在或验证码不正确，抛出 HttpException 异常
+   */
+  async updatePassword(userId: number, passwordDto: UpdateUserPasswordDto) {
+    const captcha = await this.redisService.get(
+      `update_password_captcha_${passwordDto.email}`,
+    );
+
+    if (!captcha) {
+      throw new HttpException('验证码已失效', HttpStatus.BAD_REQUEST);
+    }
+
+    if (passwordDto.captcha !== captcha) {
+      throw new HttpException('验证码不正确', HttpStatus.BAD_REQUEST);
+    }
+
+    const foundUser = await this.userRepository.findOneBy({
+      id: userId,
+    });
+
+    foundUser.password = md5(passwordDto.password);
+
+    try {
+      await this.userRepository.save(foundUser);
+      return '密码修改成功';
+    } catch (e) {
+      this.logger.error(e, UserService);
+      return '密码修改失败';
+    }
   }
 }

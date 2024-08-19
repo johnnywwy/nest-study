@@ -3,12 +3,16 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { FormatResponseInterceptor } from './format-response.interceptor';
+import { InvokeRecordInterceptor } from './invoke-record.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // 配置全局验证管道
   app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalInterceptors(new FormatResponseInterceptor()); //接口统一响应格式
+  app.useGlobalInterceptors(new InvokeRecordInterceptor()); //接口调用记录
 
   // 配置swagger
   const config = new DocumentBuilder()

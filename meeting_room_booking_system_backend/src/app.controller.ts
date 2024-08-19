@@ -2,7 +2,6 @@ import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiTags } from '@nestjs/swagger';
 import { RequireLogin, RequirePermission, UserInfo } from './custom.decorator';
-import { userInfo } from 'os';
 
 @ApiTags('app 模块')
 @Controller()
