@@ -65,6 +65,8 @@ export class UserService {
     }
 
     try {
+      console.log('foundUser', foundUser);
+
       await this.userRepository.save(foundUser);
       return '用户信息修改成功';
     } catch (e) {
