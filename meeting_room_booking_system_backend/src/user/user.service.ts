@@ -156,7 +156,11 @@ export class UserService {
     return vo;
   }
 
-  // 初始化数据
+  /**
+   * 初始化数据
+   *
+   * @returns 初始化数据操作的结果
+   */
   async initData() {
     const user1 = new User();
     user1.username = 'zhangsan';
@@ -197,7 +201,13 @@ export class UserService {
     await this.userRepository.save([user1, user2]);
   }
 
-  // 获取用户信息
+  /**
+   * 根据用户ID和是否管理员身份查找用户
+   *
+   * @param userId 用户ID
+   * @param isAdmin 是否管理员身份
+   * @returns 包含用户信息的对象，包括id、username、isAdmin、email、roles和permissions
+   */
   async findUserById(userId: number, isAdmin: boolean) {
     const user = await this.userRepository.findOne({
       where: {
@@ -274,5 +284,40 @@ export class UserService {
       this.logger.error(e, UserService);
       return '密码修改失败';
     }
+  }
+
+  /**
+   * 根据用户ID冻结用户账户
+   *
+   * @param id 用户ID
+   * @returns 无返回值，操作结果会通过异步操作的方式反映到数据库中
+   */
+  async freezeUserById(id: number) {
+    const user = await this.userRepository.findOneBy({
+      id,
+    });
+    user.isFrozen = true;
+    await this.userRepository.save(user);
+  }
+
+  /**
+   * 根据页码和每页数量查找用户列表
+   *
+   * @param pageNo 页码
+   * @param pageSize 每页数量
+   * @returns 包含用户列表和总数的对象
+   */
+  async findUsersByPage(pageNo: number, pageSize: number) {
+    const skipCount = (pageNo - 1) * pageSize;
+
+    const [users, totalCount] = await this.userRepository.findAndCount({
+      skip: skipCount,
+      take: pageSize,
+    });
+
+    return {
+      users,
+      totalCount,
+    };
   }
 }

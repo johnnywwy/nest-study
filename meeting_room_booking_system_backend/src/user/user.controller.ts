@@ -10,6 +10,9 @@ import {
   Query,
   HttpStatus,
   UnauthorizedException,
+  BadRequestException,
+  ParseIntPipe,
+  DefaultValuePipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -25,6 +28,7 @@ import { ConfigService } from '@nestjs/config';
 import { RequireLogin, UserInfo } from 'src/custom.decorator';
 import { UserDetailVo } from './vo/user-info.vo';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
+import { generateParseIntPipe } from 'src/utils';
 
 @ApiTags('用户管理模块')
 @Controller('user')
@@ -239,6 +243,27 @@ export class UserController {
     @Body() updateUserDto: UpdateUserDto,
   ) {
     return await this.userService.update(userId, updateUserDto);
+  }
+
+  @ApiOperation({ summary: '冻结用户' })
+  @Post('freeze')
+  async freeze(@Query('id') userId: number) {
+    return await this.userService.freezeUserById(userId);
+  }
+
+  @ApiOperation({ summary: '获取用户列表' })
+  @Get('list')
+  async list(
+    @Query('pageNo', new DefaultValuePipe(1), generateParseIntPipe('pageNo'))
+    pageNo: number,
+    @Query(
+      'pageSize',
+      new DefaultValuePipe(2),
+      generateParseIntPipe('pageSize'),
+    )
+    pageSize: number,
+  ) {
+    return await this.userService.findUsersByPage(pageNo, pageSize);
   }
 
   // @ApiOperation({ summary: '删除用户' })
