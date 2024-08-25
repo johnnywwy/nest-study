@@ -23,6 +23,10 @@ async function bootstrap() {
     .setTitle('会议室预定系统')
     .setDescription('一个 React + AntD + Nest + Nginx + Mysql +  Redis 项目')
     .setVersion('1.0')
+    .addBearerAuth({
+      type: 'http',
+      description: '基于 jwt 验证',
+    })
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

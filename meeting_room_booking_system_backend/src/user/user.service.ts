@@ -13,7 +13,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 
 import { RedisService } from 'src/redis/redis.service';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { md5 } from 'src/utils';
 
 import { User } from './entities/user.entity';
@@ -23,6 +23,7 @@ import { Permission } from './entities/permission.entity';
 import { LoginUserVo } from './vo/login-user.vo';
 import { LoginUserDto } from './dto/login-user.dto';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
+import { UserListVo } from './vo/user-list.vo';
 
 @Injectable()
 export class UserService {
@@ -319,5 +320,60 @@ export class UserService {
       users,
       totalCount,
     };
+  }
+
+  /**
+   * 查询用户列表
+   *
+   * @param username 用户名，支持模糊查询
+   * @param nickName 昵称，支持模糊查询
+   * @param email 邮箱，支持模糊查询
+   * @param pageNo 页码，从1开始
+   * @param pageSize 每页显示的记录数
+   * @returns 返回用户列表及总数
+   */
+  async findUsers(
+    username: string,
+    nickName: string,
+    email: string,
+    pageNo: number,
+    pageSize: number,
+  ) {
+    const skipCount = (pageNo - 1) * pageSize;
+
+    const condition: Record<string, any> = {};
+
+    if (username) {
+      condition.username = Like(`%${username}%`);
+    }
+    if (nickName) {
+      condition.nickName = Like(`%${nickName}%`);
+    }
+    if (email) {
+      condition.email = Like(`%${email}%`);
+    }
+
+    const [users, totalCount] = await this.userRepository.findAndCount({
+      select: [
+        'id',
+        'username',
+        'nickName',
+        'email',
+        'phoneNumber',
+        'isFrozen',
+        'headPic',
+        'createTime',
+      ],
+      skip: skipCount,
+      take: pageSize,
+      where: condition,
+    });
+
+    const vo = new UserListVo();
+
+    vo.users = users;
+    vo.totalCount = totalCount;
+
+    return vo;
   }
 }
