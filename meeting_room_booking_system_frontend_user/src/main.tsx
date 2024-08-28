@@ -6,38 +6,40 @@ import {
   BrowserRouter,
   Routes,
   Route,
+  RouterProvider,
 } from "react-router-dom";
 // import { BrowserRouter } from "react-router-dom";
 
-import App from "./App.tsx";
+// import App from "./App.tsx";
 import "./index.css";
-import Expenses from "./routes/expenses.tsx";
-import Invoices from "./routes/invoices.tsx";
 
-const router = createBrowserRouter([
+import { ErrorPage } from "./views/Error/ErrorPage.tsx";
+import { Home } from "./views/Home/Home.tsx";
+import { UserManage } from "./views/User/UserManage.tsx";
+import { Login } from "./views/Login/Login.tsx";
+
+const routes = [
   {
     path: "/",
-    element: <App />,
+    element: <Home />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "user_manage",
+        element: <UserManage />,
+      },
+    ],
   },
-]);
+  {
+    path: "login",
+    element: <Login />,
+  },
+];
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />}>
-          <Route path="expenses" element={<Expenses />} />
-          <Route path="invoices" element={<Invoices />} />
-          <Route
-            path="*"
-            element={
-              <main style={{ padding: "1rem" }}>
-                <p>There's nothing here!</p>
-              </main>
-            }
-          />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  </StrictMode>
+const router = createBrowserRouter(routes);
+
+createRoot(document.getElementById("root") as HTMLElement).render(
+  <RouterProvider router={router} />
 );
+
+// root.render(<RouterProvider router={router} />);
