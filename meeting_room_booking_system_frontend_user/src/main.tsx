@@ -17,6 +17,7 @@ import { ErrorPage } from "./views/Error/ErrorPage.tsx";
 import { Home } from "./views/Home/Home.tsx";
 import { UserManage } from "./views/User/UserManage.tsx";
 import { Login } from "./views/Login/Login.tsx";
+import { Menu } from "./views/Menu/Menu.tsx";
 
 const routes = [
   {
@@ -25,9 +26,19 @@ const routes = [
     errorElement: <ErrorPage />,
     children: [
       {
-        path: "user_manage",
-        element: <UserManage />,
+        path: "/",
+        element: <Menu />,
+        children: [
+          {
+            path: "user_manage",
+            element: <UserManage />,
+          },
+        ],
       },
+      // {
+      //   path: "user_manage",
+      //   element: <UserManage />,
+      // },
     ],
   },
   {
