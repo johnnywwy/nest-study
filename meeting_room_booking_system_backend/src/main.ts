@@ -18,6 +18,13 @@ async function bootstrap() {
   app.useGlobalFilters(new UnloginFilter()); //未登录拦截器
   app.useGlobalFilters(new CustomExceptionFilter()); //自定义异常拦截器
 
+  // 配置 CORS 以允许指定域名的跨域请求
+  app.enableCors({
+    origin: ['http://localhost:5173'], //
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Content-Type, Authorization',
+  });
+
   // 配置swagger
   const config = new DocumentBuilder()
     .setTitle('会议室预定系统')

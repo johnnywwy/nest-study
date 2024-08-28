@@ -11,7 +11,7 @@ import {
 // import { BrowserRouter } from "react-router-dom";
 
 // import App from "./App.tsx";
-import "./index.css";
+import "./reset.css";
 
 import { ErrorPage } from "./views/Error/ErrorPage.tsx";
 import { Home } from "./views/Home/Home.tsx";
