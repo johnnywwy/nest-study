@@ -75,3 +75,11 @@ export async function userSearch(
     },
   });
 }
+
+export async function freeze(id: number) {
+  return await axiosInstance.get("/user/freeze", {
+    params: {
+      id,
+    },
+  });
+}
