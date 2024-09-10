@@ -18,6 +18,9 @@ import { Home } from "./views/Home/Home.tsx";
 import { UserManage } from "./views/User/UserManage.tsx";
 import { Login } from "./views/Login/Login.tsx";
 import { Menu } from "./views/Menu/Menu.tsx";
+import { ModifyMenu } from "./views/ModifyMenu/ModifyMenu.tsx";
+import { InfoModify } from "./views/InfoModify/InfoModify.tsx";
+import { PasswordModify } from "./views/PasswordModify/PasswordModify.tsx";
 
 const routes = [
   {
@@ -35,6 +38,20 @@ const routes = [
           },
         ],
       },
+      {
+        path: "/user",
+        element: <ModifyMenu />,
+        children: [
+          {
+            path: "info_modify",
+            element: <InfoModify />,
+          },
+          {
+            path: "password_modify",
+            element: <PasswordModify />,
+          },
+        ],
+      },
       // {
       //   path: "user_manage",
       //   element: <UserManage />,
@@ -47,7 +64,7 @@ const routes = [
   },
 ];
 
-const router = createBrowserRouter(routes);
+export const router = createBrowserRouter(routes);
 
 createRoot(document.getElementById("root") as HTMLElement).render(
   <RouterProvider router={router} />
