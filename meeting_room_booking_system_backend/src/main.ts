@@ -22,7 +22,7 @@ async function bootstrap() {
   app.enableCors({
     origin: ['http://localhost:5173'], //
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type, Authorization',
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-with'], // 添加 'x-requested-with'
   });
 
   // 配置swagger
