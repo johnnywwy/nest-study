@@ -13,6 +13,8 @@ import {
   BadRequestException,
   ParseIntPipe,
   DefaultValuePipe,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -37,6 +39,9 @@ import { UserDetailVo } from './vo/user-info.vo';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { generateParseIntPipe } from 'src/utils';
 import { LoginUserVo } from './vo/login-user.vo';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { storage } from 'src/my-file-storage';
+import * as path from 'path';
 
 @ApiTags('用户管理模块')
 @Controller('user')
@@ -363,6 +368,29 @@ export class UserController {
           this.configService.get('jwt_refresh_token_expres_time') || '7d',
       },
     );
+  }
+
+  @Post('upload')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      dest: 'uploads',
+      storage: storage,
+      limits: {
+        fileSize: 1024 * 1024 * 3,
+      },
+      fileFilter(req, file, callback) {
+        const extname = path.extname(file.originalname);
+        if (['.png', '.jpg', '.gif'].includes(extname)) {
+          callback(null, true);
+        } else {
+          callback(new BadRequestException('只能上传图片'), false);
+        }
+      },
+    }),
+  )
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
+    console.log('file', file);
+    return file.path;
   }
 
   // 生成access_token
