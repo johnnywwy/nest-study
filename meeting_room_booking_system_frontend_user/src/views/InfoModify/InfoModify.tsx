@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import "./info_modify.css";
 import { useNavigate } from "react-router-dom";
 import { HeadPicUpload } from "./HeadPicUpload";
+import { getUserInfo } from "../axios/interfaces";
 
 export interface UserInfo {
   username: string;
@@ -27,7 +28,17 @@ export function InfoModify() {
   const sendCaptcha = useCallback(async function () {}, []);
 
   useEffect(() => {
-    async function query() {}
+    async function query() {
+      const res = await getUserInfo();
+
+      const { data } = res.data;
+
+      if (res.status === 201 || res.status === 200) {
+        form.setFieldValue("headPic", data.headPic);
+        form.setFieldValue("nickName", data.nickName);
+        form.setFieldValue("email", data.email);
+      }
+    }
     query();
   }, []);
 

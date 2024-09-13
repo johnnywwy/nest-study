@@ -83,3 +83,31 @@ export async function freeze(id: number) {
     },
   });
 }
+
+/**
+ * 获取用户信息
+ *
+ * @returns 返回用户信息
+ */
+export async function getUserInfo() {
+  return await axiosInstance.get("/user/info");
+}
+
+/**
+ * 更新用户信息
+ *
+ * @param data 用户信息对象
+ * @returns 异步返回更新后的用户信息
+ */
+export async function updateInfo(data: UserInfo) {
+  return await axiosInstance.post("/user/admin/update", data);
+}
+
+/**
+ * 更新用户信息验证码
+ *
+ * @returns 返回一个Promise对象，解析后为更新验证码的响应结果
+ */
+export async function updateUserInfoCaptcha() {
+  return await axiosInstance.get("/user/update/captcha");
+}

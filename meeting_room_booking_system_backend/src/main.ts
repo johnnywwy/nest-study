@@ -7,9 +7,15 @@ import { FormatResponseInterceptor } from './format-response.interceptor';
 import { InvokeRecordInterceptor } from './invoke-record.interceptor';
 import { UnloginFilter } from './unlogin.filter';
 import { CustomExceptionFilter } from './custom-exception.filter';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // 配置静态资源目录
+  app.useStaticAssets('uploads', {
+    prefix: '/uploads',
+  });
 
   // 配置全局验证管道
   app.useGlobalPipes(new ValidationPipe()); //全局验证管道
