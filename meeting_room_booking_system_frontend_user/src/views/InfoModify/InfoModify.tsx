@@ -4,7 +4,14 @@ import { useCallback, useEffect, useState } from "react";
 import "./info_modify.css";
 import { useNavigate } from "react-router-dom";
 import { HeadPicUpload } from "./HeadPicUpload";
-import { getUserInfo } from "../axios/interfaces";
+import { getUserInfo, updatePasswordCaptcha } from "../axios/interfaces";
+
+export interface UpdatePassword {
+  email: string;
+  captcha: string;
+  password: string;
+  confirmPassword: string;
+}
 
 export interface UserInfo {
   username: string;
@@ -25,7 +32,18 @@ export function InfoModify() {
 
   const onFinish = useCallback(async (values: UserInfo) => {}, []);
 
-  const sendCaptcha = useCallback(async function () {}, []);
+  const sendCaptcha = useCallback(async function () {
+    const address = form.getFieldValue("email");
+    if (!address) {
+      return message.error("邮箱地址为空");
+    }
+    const res = await updatePasswordCaptcha(address);
+    if (res.status === 201 || res.status === 200) {
+      message.success(res.data.data);
+    } else {
+      message.error("系统繁忙，请稍后再试");
+    }
+  }, []);
 
   useEffect(() => {
     async function query() {

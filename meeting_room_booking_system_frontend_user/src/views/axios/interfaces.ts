@@ -1,5 +1,6 @@
 import { message } from "antd";
 import axios from "axios";
+import { UpdatePassword } from "../InfoModify/InfoModify";
 
 const axiosInstance = axios.create({
   baseURL: "http://localhost:3000",
@@ -110,4 +111,28 @@ export async function updateInfo(data: UserInfo) {
  */
 export async function updateUserInfoCaptcha() {
   return await axiosInstance.get("/user/update/captcha");
+}
+
+/**
+ * 更新密码验证码
+ *
+ * @param email 邮箱地址
+ * @returns 返回更新密码验证码的结果
+ */
+export async function updatePasswordCaptcha(email: string) {
+  return await axiosInstance.get("/user/update_password/captcha", {
+    params: {
+      address: email,
+    },
+  });
+}
+
+/**
+ * 更新密码
+ *
+ * @param data 更新密码所需的数据
+ * @returns 返回更新密码的响应结果
+ */
+export async function updatePassword(data: UpdatePassword) {
+  return await axiosInstance.post("/user/admin/update_password", data);
 }
