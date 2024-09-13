@@ -35,6 +35,8 @@ const dragger = (
 export function HeadPicUpload(props: HeadPicUploadProps) {
   onChange = props.onChange!;
 
+  console.log("ssssssss", props.value);
+
   return props?.value ? (
     <div>
       <img
