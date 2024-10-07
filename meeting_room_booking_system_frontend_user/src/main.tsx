@@ -11,7 +11,7 @@ import {
 // import { BrowserRouter } from "react-router-dom";
 
 // import App from "./App.tsx";
-import "./reset.css";
+// import "./reset.css";
 
 import { ErrorPage } from "./views/Error/ErrorPage.tsx";
 import { Home } from "./views/Home/Home.tsx";
@@ -21,6 +21,8 @@ import { Menu } from "./views/Menu/Menu.tsx";
 import { ModifyMenu } from "./views/ModifyMenu/ModifyMenu.tsx";
 import { InfoModify } from "./views/InfoModify/InfoModify.tsx";
 import { PasswordModify } from "./views/PasswordModify/PasswordModify.tsx";
+import { Register } from "./views/Register/register.tsx";
+import { UpdatePassword } from "./views/Update_password/UpdatePassword.tsx";
 
 const routes = [
   {
@@ -61,6 +63,14 @@ const routes = [
   {
     path: "login",
     element: <Login />,
+  },
+  {
+    path: "register",
+    element: <Register />,
+  },
+  {
+    path: "update_password",
+    element: <UpdatePassword />,
   },
 ];
 

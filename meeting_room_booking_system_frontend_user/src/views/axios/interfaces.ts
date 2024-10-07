@@ -21,7 +21,7 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async (error) => {
-    let { data, config } = error.response;
+    const { data, config } = error.response;
 
     if (data.code === 401 && !config.url.includes("/user/admin/refresh")) {
       const res = await refreshToken();
@@ -135,4 +135,28 @@ export async function updatePasswordCaptcha(email: string) {
  */
 export async function updatePassword(data: UpdatePassword) {
   return await axiosInstance.post("/user/admin/update_password", data);
+}
+
+/**
+ * 注册验证码
+ *
+ * @param email 邮箱地址
+ * @returns 验证码注册结果
+ */
+export async function registerCaptcha(email: string) {
+  return await axiosInstance.get("/user/register-captcha", {
+    params: {
+      address: email,
+    },
+  });
+}
+
+/**
+ * 用户注册
+ *
+ * @param registerUser 用户注册信息对象
+ * @returns 返回Promise，包含axios.post方法的结果
+ */
+export async function register(registerUser: RegisterUser) {
+  return await axiosInstance.post("/user/register", registerUser);
 }

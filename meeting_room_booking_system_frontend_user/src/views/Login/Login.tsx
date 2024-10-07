@@ -2,7 +2,7 @@ import { Button, Checkbox, Form, Input, message } from "antd";
 import "./login.css";
 import { useCallback } from "react";
 import { login } from "../axios/interfaces";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface LoginUser {
   username: string;
@@ -12,6 +12,11 @@ interface LoginUser {
 const layout1 = {
   labelCol: { span: 4 },
   wrapperCol: { span: 20 },
+};
+
+const layout2 = {
+  labelCol: { span: 0 },
+  wrapperCol: { span: 24 },
 };
 
 export function Login() {
@@ -56,7 +61,14 @@ export function Login() {
           <Input.Password />
         </Form.Item>
 
-        <Form.Item label=" ">
+        <Form.Item {...layout2}>
+          <div className="links">
+            <Link to="/register">创建账号</Link>
+            <Link to="/update_password">忘记密码</Link>
+          </div>
+        </Form.Item>
+
+        <Form.Item {...layout2}>
           <Button className="btn" type="primary" htmlType="submit">
             登录
           </Button>
