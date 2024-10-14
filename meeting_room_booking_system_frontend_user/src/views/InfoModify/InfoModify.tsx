@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import "./info_modify.css";
 import { useNavigate } from "react-router-dom";
 import { HeadPicUpload } from "./HeadPicUpload";
-import { getUserInfo, updatePasswordCaptcha } from "../axios/interfaces";
+import { getUserInfo, updateInfo, updatePasswordCaptcha } from "../axios/interfaces";
 
 export interface UpdatePassword {
   email: string;
@@ -30,7 +30,32 @@ export function InfoModify() {
   const [form] = useForm();
   const navigate = useNavigate();
 
-  const onFinish = useCallback(async (values: UserInfo) => {}, []);
+  const onFinish = useCallback(async (values: UserInfo) => {
+
+    const res = await updateInfo(values)
+    if(res.status === 201 || res.status === 200) {
+      const { message: msg, data} = res.data;
+      if(msg === 'success') {
+          message.success('用户信息更新成功');
+
+          const userInfo = localStorage.getItem('user_info');
+          if(userInfo) {
+              const info = JSON.parse(userInfo);
+              info.headPic = values.headPic;
+              info.nickName = values.nickName;
+
+              localStorage.setItem('user_info', JSON.stringify(info));
+          }
+
+      } else {
+          message.error(data);
+      }
+    } else {
+      message.error(res.data?.data || '系统繁忙，请稍后再试');
+    }
+
+
+  }, []);
 
   const sendCaptcha = useCallback(async function () {
     const address = form.getFieldValue("email");

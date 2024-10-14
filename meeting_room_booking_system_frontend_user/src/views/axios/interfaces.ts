@@ -94,6 +94,17 @@ export async function getUserInfo() {
   return await axiosInstance.get("/user/info");
 }
 
+
+/**
+ * 更新用户信息
+ *
+ * @param data 用户信息对象
+ * @returns 异步返回更新后的用户信息
+ */
+// export async function updateInfo(data: UserInfo) {
+//   return await axiosInstance.post("/user/admin/update", data);
+// }
+
 /**
  * 更新用户信息
  *
@@ -101,8 +112,9 @@ export async function getUserInfo() {
  * @returns 异步返回更新后的用户信息
  */
 export async function updateInfo(data: UserInfo) {
-  return await axiosInstance.post("/user/admin/update", data);
+  return await axiosInstance.post('/user/update', data);
 }
+
 
 /**
  * 更新用户信息验证码
