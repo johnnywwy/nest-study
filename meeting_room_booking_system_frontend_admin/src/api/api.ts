@@ -1,8 +1,14 @@
-import { axiosInstance } from "../interfaces/interfaces";
+import request from '../axios'
 
-export async function login(username: string, password: string) {
-    return await axiosInstance.post('/user/admin/login', {
-        username, password
-    });
+export interface LoginVO {
+    username: string,
+    password: string
 }
 
+export const login = async (data: LoginVO) => {
+    return await request.post({ url: '/user/admin/login', data });
+}
+
+// export const createBusiness = async (data: BusinessVO) => {
+//     return await request.post({ url: `/crm/business/create`, data })
+//   }

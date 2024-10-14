@@ -1,4 +1,4 @@
-import { Button, Checkbox, Form, Input } from 'antd';
+import { Button, Checkbox, Form, Input, message } from 'antd';
 import './login.css';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -20,8 +20,13 @@ export function Login() {
     const onFinish = useCallback(async (values: LoginUser) => {
         console.log(values);
 
-        const res = await login(values.username, values.password);
-        console.log('res', res);
+        const res = await login(values);
+        if (res) {
+            message.success('登录成功');
+            localStorage.setItem('access_token', res.accessToken);
+            localStorage.setItem('refresh_token', res.refreshToken);
+            localStorage.setItem('user_info', JSON.stringify(res.userInfo));
+        }
 
     }, []);
 

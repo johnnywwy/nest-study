@@ -1,14 +1,14 @@
 import axios from "axios";
 import { message } from 'antd';
 
-export const axiosInstance = axios.create({
+export const service = axios.create({
     baseURL: 'http://localhost:3000',
     timeout: 3000
 });
 
 
 // 请求拦截器
-axiosInstance.interceptors.request.use(
+service.interceptors.request.use(
     (config) => {
       const accessToken = localStorage.getItem('access_token');
       if (accessToken) {
@@ -24,11 +24,13 @@ axiosInstance.interceptors.request.use(
 
 
 // 响应拦截器
-axiosInstance.interceptors.response.use(
+service.interceptors.response.use(
     (response) => {
         // 统一处理成功响应
         const { data, status } = response;
     
+        console.log('没咩咩', response);
+        
         // 可根据业务逻辑处理，比如检查 code、status 等
         if (status === 200 || status === 201) {
           return data; // 正常情况下直接返回数据
@@ -41,11 +43,14 @@ axiosInstance.interceptors.response.use(
         // 处理请求错误，比如网络异常、超时、服务器错误等
         if (error.response) {
           const { status, data } = error.response;
-    
+          
+          console.log('datadata',data);
+          
+
           // 处理不同的 HTTP 状态码
           switch (status) {
             case 400:
-              message.error(data.message || '请求错误');
+              message.error(data.data || '请求错误');
               break;
             case 401:
               message.error('未授权，请重新登录');
@@ -75,4 +80,3 @@ axiosInstance.interceptors.response.use(
         return Promise.reject(error); // 抛出错误供业务层捕获
     }
   );
-
