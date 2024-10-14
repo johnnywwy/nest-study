@@ -26,7 +26,7 @@ async function bootstrap() {
 
   // 配置 CORS 以允许指定域名的跨域请求
   app.enableCors({
-    origin: ['http://localhost:5173'], //
+    origin: ['http://localhost:5173','http://localhost:5174'], //
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-with'], // 添加 'x-requested-with'
   });
