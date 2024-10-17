@@ -1,6 +1,8 @@
 import { service } from "./service"
 
-const default_headers = 'Bearer'
+import { config } from './config'
+
+const { default_headers } = config
 
 const request = (option: any) => {
     const { url, method, params, data, headersType, responseType, ...config } = option

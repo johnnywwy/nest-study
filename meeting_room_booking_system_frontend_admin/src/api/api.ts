@@ -5,7 +5,7 @@ export interface LoginVO {
     password: string
 }
 
-export const login = async (data: LoginVO) => {
+export const login = async (data: LoginVO) => {    
     return await request.post({ url: '/user/admin/login', data });
 }
 
