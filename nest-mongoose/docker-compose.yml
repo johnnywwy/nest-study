@@ -1,0 +1,18 @@
+version: '3'
+services:
+  mongo:
+    image: mongo
+    container_name: mongo-test
+    ports:
+      - '27017:27017'
+    volumes:
+      - /Users/johnnywwy/code/mongoDB:/data/db
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: always
+    ports:
+      - '8081:8081'
+    depends_on:
+      - mongo
