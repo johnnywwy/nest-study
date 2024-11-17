@@ -3,29 +3,31 @@ import { CreateDogDto } from './dto/create-dog.dto';
 import { UpdateDogDto } from './dto/update-dog.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Dog } from './entities/dog.entity';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class DogService {
   @InjectModel(Dog.name)
-  private readonly dogModel: ModelType<Dog>;
+  private readonly dogModel: Model<Dog>;
 
   create(createDogDto: CreateDogDto) {
-    return 'This action adds a new dog';
+    const dog = new this.dogModel(createDogDto);
+    return dog.save();
   }
 
   findAll() {
-    return `This action returns all dog`;
+    return this.dogModel.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} dog`;
+  findOne(id: string) {
+    return this.dogModel.findById(id);
   }
 
-  update(id: number, updateDogDto: UpdateDogDto) {
-    return `This action updates a #${id} dog`;
+  update(id: string, updateDogDto: UpdateDogDto) {
+    return this.dogModel.findByIdAndUpdate(id, updateDogDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} dog`;
+  remove(id: string) {
+    return this.dogModel.findByIdAndDelete(id);
   }
 }
